@@ -447,17 +447,22 @@ export class ContextMenuManager {
     }
 
     SetInventoryActionMenuPosition(actionName: string, position: number) {
+         let lookupName = actionName.toLowerCase().replace(/ /g, '_');
+
         const ContextMenuActions = document.client.get('QA');
-        if (ContextMenuActions[actionName] !== undefined) {
-            this.inventoryActionsSorting[ContextMenuActions[actionName]] =
+        console.log("the actions", ContextMenuActions);
+        if (ContextMenuActions[lookupName] !== undefined) {
+            this.inventoryActionsSorting[ContextMenuActions[lookupName]] =
                 position;
         }
     }
 
     RemoveInventoryActionMenuPosition(actionName: string) {
+        let lookupName = actionName.toLowerCase().replace(/ /g, '_');
+
         const ContextMenuActions = document.client.get('QA');
-        if (ContextMenuActions[actionName] !== undefined) {
-            delete this.inventoryActionsSorting[ContextMenuActions[actionName]];
+        if (ContextMenuActions[lookupName] !== undefined) {
+            delete this.inventoryActionsSorting[ContextMenuActions[lookupName]];
         }
     }
 

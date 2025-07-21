@@ -32,6 +32,7 @@ import { CustomCursor } from './highlite/plugins/CustomCursor';
 import { QuickActionMouseTooltip } from './highlite/plugins/QuickActionMouseTooltip';
 import { ExtraInfoBar } from './highlite/plugins/ExtraInfoBar';
 import { SpellTooltips } from './highlite/plugins/SpellTooltips';
+import { ShiftClickDrop } from './highlite/plugins/ShiftClickDrop';
 
 import '@iconify/iconify';
 import '@static/css/index.css';
@@ -82,6 +83,7 @@ const PLUGIN_REGISTRY = [
     { class: QuickActionMouseTooltip, path: './highlite/plugins/QuickActionMouseTooltip' },
     { class: ExtraInfoBar, path: './highlite/plugins/ExtraInfoBar' },
     { class: SpellTooltips, path: './highlite/plugins/SpellTooltips' },
+    { class: ShiftClickDrop, path: './highlite/plugins/ShiftClickDrop' },
 ];
 
 async function obtainGameClient() {
