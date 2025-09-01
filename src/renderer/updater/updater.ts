@@ -1,74 +1,110 @@
-// Update Progress
-const updateStatus = document.getElementById('update-status');
+// Copyright (C) 2025  HighLite
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+
+import '@iconify/iconify';
+
+// Update Progress UI elements
+const $ = <T extends HTMLElement = HTMLElement>(id: string) => document.getElementById(id) as T;
+const updateStatus = $('update-status');
+const progressLoader = $('progressLoader');
+const progressBar = $('progressBar') as HTMLDivElement;
+const progressLabel = $('progressLabel');
+const sectionUpdateChange = $('update-change');
+const releaseNotes = $('releaseNotes');
+const btnUpdateNow = $('updateNow') as HTMLButtonElement;
+const btnUpdateLater = $('updateLater') as HTMLButtonElement;
+const btnRestartNow = $('restartNow') as HTMLButtonElement;
+const btnRestartLater = $('restartLater') as HTMLButtonElement;
+const closeBtn = $('closeBtn') as HTMLAnchorElement;
 
 // Obtain the update progress from the main process
 window.electron.ipcRenderer.on('download-progress', (_, progress) => {
     // Round the progress to the nearest integer
     progress = Math.round(progress);
     updateStatus.textContent = `Downloading update...`;
-    document.getElementById('progressText').innerText = `${progress}%`;
+    progressBar.style.width = `${progress}%`;
+    progressBar.parentElement?.setAttribute('aria-valuenow', String(progress));
+    progressLabel.textContent = `${progress}%`;
 });
 
 window.electron.ipcRenderer.on('update-downloaded', _ => {
     console.log('Update downloaded');
     updateStatus.textContent = `Update Ready!`;
-    document.getElementById('progressLoader').style.visibility = 'hidden';
-    document.getElementById('restartNow').style.display = 'block';
-    document.getElementById('restartLater').style.display = 'block';
-    document.getElementById('updateNow').style.display = 'none';
-    document.getElementById('updateLater').style.display = 'none';
+    progressLoader.style.visibility = 'hidden';
+    btnRestartNow.style.display = 'block';
+    btnRestartLater.style.display = 'block';
+    btnUpdateNow.style.display = 'none';
+    btnUpdateLater.style.display = 'none';
 });
 
 window.electron.ipcRenderer.on('update-available', (_, releaseInfo) => {
-    updateStatus.textContent =
-        'Update to ' + releaseInfo.releaseName + ' Available!';
-    document.getElementById('progressLoader').style.visibility = 'hidden';
-    document.getElementById('updateNow').style.display = 'block';
-    document.getElementById('updateLater').style.display = 'block';
-    document.getElementById('update-change').style.display = 'flex';
-
-    document.getElementById('releaseNotes').innerHTML =
-        releaseInfo.releaseNotes;
+    updateStatus.textContent = 'Update to ' + releaseInfo.releaseName + ' Available!';
+    progressLoader.style.visibility = 'hidden';
+    btnUpdateNow.style.display = 'block';
+    btnUpdateLater.style.display = 'block';
+    // Show release notes section (block layout in mobile, grid/column later)
+    sectionUpdateChange.style.display = 'block';
+    releaseNotes.innerHTML = releaseInfo.releaseNotes;
 });
 
 // When updateNow is clicked, send the install-update event to the main process
-document.getElementById('updateNow').addEventListener('click', () => {
+btnUpdateNow.addEventListener('click', () => {
     window.electron.ipcRenderer.send('download-update');
 
     // Disable the buttons
-    document.getElementById('update-change').style.display = 'none';
-    document.getElementById('updateNow').style.display = 'none';
-    document.getElementById('updateLater').style.display = 'none';
+    btnUpdateNow.style.display = 'none';
+    btnUpdateLater.style.display = 'none';
 
     updateStatus.textContent = `Downloading update...`;
-    document.getElementById('progressLoader').style.visibility = 'visible';
-    document.getElementById('progressText').style.display = 'flex';
-
-    document.getElementById('progressText').innerText = `0%`;
+    progressLoader.style.visibility = 'visible';
+    progressBar.style.width = '0%';
+    progressBar.parentElement?.setAttribute('aria-valuenow', '0');
+    progressLabel.textContent = '0%';
 });
 
-document.getElementById('restartNow').addEventListener('click', () => {
+btnRestartNow.addEventListener('click', () => {
     window.electron.ipcRenderer.send('install-update');
     // Disable the buttons
-    (document.getElementById('restartNow') as HTMLButtonElement).disabled =
-        true;
-    (document.getElementById('restartLater') as HTMLButtonElement).disabled =
-        true;
+    btnRestartNow.disabled = true;
+    btnRestartLater.disabled = true;
 });
 
-document.getElementById('restartLater').addEventListener('click', () => {
+btnRestartLater.addEventListener('click', () => {
     window.electron.ipcRenderer.send('delay-update');
     // Disable the buttons
-    (document.getElementById('restartNow') as HTMLButtonElement).disabled =
-        true;
-    (document.getElementById('restartLater') as HTMLButtonElement).disabled =
-        true;
+    btnRestartNow.disabled = true;
+    btnRestartLater.disabled = true;
 });
 
-document.getElementById('updateLater').addEventListener('click', () => {
+btnUpdateLater.addEventListener('click', () => {
     window.electron.ipcRenderer.send('delay-update');
     // Disable the buttons
-    (document.getElementById('updateNow') as HTMLButtonElement).disabled = true;
-    (document.getElementById('updateLater') as HTMLButtonElement).disabled =
-        true;
+    btnUpdateNow.disabled = true;
+    btnUpdateLater.disabled = true;
 });
+
+closeBtn.addEventListener('click', () => {
+    window.electron.ipcRenderer.send('delay-update');
+});
+
+const isDarwin = window.electron.process.platform === 'darwin';
+
+// Hide the window controls if the OS is Darwin (macOS)
+if(isDarwin) {
+    document.getElementById('window-controls')?.remove();
+} else {
+    document.getElementById('darwin-spacer')?.remove();
+}

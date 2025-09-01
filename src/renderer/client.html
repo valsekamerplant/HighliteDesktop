@@ -1,20 +1,35 @@
+<!-- Copyright (C) 2025  HighLite
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <https://www.gnu.org/licenses/>. -->
+
 <!doctype html>
 <html lang="en">
     <head>
+        <script type="importmap">
+            {
+                "imports": {
+                    "@highlite/plugin-api": "https://cdn.jsdelivr.net/npm/@highlite/core@2.1.1/dist/index.min.js",
+                    "@highlite/core": "https://cdn.jsdelivr.net/npm/@highlite/core@2.1.1/dist/index.min.js",
+                    "@babylonjs/": "https://cdn.jsdelivr.net/npm/@babylonjs/"
+                }
+            }
+        </script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
         <meta charset="UTF-8" />
-        <!-- Local Iconify script -->
         <style>
-            #iconbar .iconify {
-                margin: 0 5px;
-                font-size: 16px;
-                color: var(--theme-text-primary, #ffffff);
-                transition: color 0.2s ease;
-            }
-
-            #iconbar a:hover .iconify {
-                color: var(--theme-accent, #f9f449);
-            }
-
             /* Warning indicator specific styles */
             #warningIndicator .warning-icon {
                 color: var(--theme-text-primary, #ffffff);
@@ -32,19 +47,6 @@
                 transform: scale(1.1);
                 transition: transform 0.2s ease;
             }
-
-            #iconbar #window-controls {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                margin-left: 20px;
-                width: 65px;
-                margin-right: 0px;
-            }
-
-            #window-controls .window-control .iconify {
-                font-size: 14px;
-            }
         </style>
     </head>
     <body>
@@ -57,23 +59,26 @@
 
             <div
                 id="iconbar"
-                style="
-                    display: flex;
-                    height: -webkit-fill-available;
-                    align-items: anchor-center;
-                "
-            >
-                <a
-                    href="https://discord.gg/highspell"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+                style="display: flex; height: -webkit-fill-available; align-items: anchor-center;">
+                <a href="https://discord.gg/highspell" target="_blank" rel="noopener noreferrer">
                     <i class="iconify" data-icon="simple-icons:discord"></i>
                 </a>
                 <a style="display: none" id="warningIndicator" href="#"
                     ><i
                         class="iconify warning-icon"
                         data-icon="material-symbols:warning-outline"
+                    ></i
+                ></a>
+                <a id="settingsBtn" href="#"
+                    ><i
+                        class="iconify"
+                        data-icon="mdi:cog"
+                    ></i
+                ></a>
+                <a id="screenshotBtn" href="#" title="Take Screenshot"
+                    ><i
+                        class="iconify"
+                        data-icon="mdi:camera"
                     ></i
                 ></a>
 
@@ -100,16 +105,13 @@
                 </div>
             </div>
         </div>
-        <video
-            width="100%"
-            height="100%"
-            autoplay
-            muted
-            loop
-            class="video-background"
-        >
-            <source src="/media/login_screen.mp4" type="video/mp4" />
+        <!-- Temporarily disable the video due to incompatibility with the new Shader system
+         Hopefully we can add it back in next patch by checking for user logged in status
+         
+        <video width="100%" height="100%" autoplay muted loop class="video-background">
+            <source src="/media/login_screen.webm" type="video/webm"/>
         </video>
+        -->
         <script type="module" src="client/client.ts"></script>
     </body>
 </html>

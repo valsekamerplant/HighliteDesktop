@@ -2,7 +2,7 @@
 <p>
   <a href="https://discord.gg/highspell"><img alt="JoinDiscord" src="https://img.shields.io/badge/Discord-Join_Us-purple?style=flat&logo=Discord&label=Discord"/></a>
   <img alt="GitHub License" src="https://img.shields.io/github/license/Highl1te/HighliteDesktop">
-  <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/Highl1te/HighliteDesktop/main.yml"> 
+  <img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/Highl1te/HighliteDesktop/main.yml">
   <img alt="Downloads" src="https://img.shields.io/github/downloads/Highl1te/HighliteDesktop/latest/total?label=Downloads&color=blue">
 </p>
 
@@ -16,22 +16,22 @@ HighLite is packaged as an Electron application and provides [Linux](#Linux), [M
 1. Obtain the .exe file from the [latest release](https://github.com/Highl1te/HighliteDesktop/releases/latest)
 > [!WARNING]
 > In Microsoft Edge, you may recieve a download warning due to HighLite not being commonly downloaded.
-> 
+>
 > ![image](https://github.com/user-attachments/assets/8dd15f93-29c4-42a8-966b-1bd8a83fa66c)
-> 
+>
 > You can typically resolve this by clicking '...' and selecting 'Keep'
 
 
 > [!WARNING]
 > HighLite is currently un-signed due to the inherent cost of obtaining signing certificates for software. This results in install and download warnings.
 > If we recieve enough players (or complaints!) we will invest in obtaining certificates.
-> 
+>
 > ![image](https://github.com/user-attachments/assets/90651443-a7ed-42b1-8e60-60af2a54fbf1)
 >
 > You can resolve this by clicking 'More Info' and pressing 'Run anyway'
-> 
+>
 > ![image](https://github.com/user-attachments/assets/f1537d49-7aac-4344-ba6a-77a01339e63f)
-> 
+>
 
 3. Install HighLite
 4. You will be prompted by the game client when launching to automatically install any future updates!
@@ -45,23 +45,76 @@ HighLite is packaged as an Electron application and provides [Linux](#Linux), [M
 
 1. Instructions Pending
 
-
-
-
-
 # Related Repositories
-HighLite is split into two repositories [HighliteDesktop](https://github.com/Highl1te/HighliteDesktop) and [Core](https://github.com/Highl1te/Core).
+The HighLite ecosystem is distributed across multiple repositories, each serving a specific purpose in the overall architecture.
 
- - `HighliteDesktop` handles pulling in the `Core` and the `High Spell Web Client` and providing a cross-platform execution space.
- - `Core` handles interactions from HighLite to the `High Spell Web Client`.
+### [Desktop Application](https://github.com/Highl1te/HighliteDesktop)
+This repository! The desktop application handles:
+- Electron-based desktop application mechanics
+- Window management and user interface
+- Core and plugin loading system
+- Auto-updater functionality
+- Cross-platform builds (Windows, Linux, macOS)
+
+### [Core](https://github.com/Highl1te/Core)
+The core repository provides APIs for interacting with the High Spell game code:
+- **@highlite/plugin-api** - TypeScript type definitions for plugin development
+- Game state monitoring and interaction APIs
+- High Spell game client integration layer
+- Plugin development framework and utilities
+- Shared interfaces for game data access
+
+### [Plugin Hub](https://github.com/Highl1te/Plugin-Hub)
+The Plugin Hub serves as the central registry:
+- Verified plugin configurations
+- Plugin version management
 
 # Development
-## Software Requirements
-- NodeJS v22 LTS (https://nodejs.org/en/download)
-- Yarn (npm install --global corepack)
+## Prerequisites
+- **Node.js v22 LTS** - [Download here](https://nodejs.org/en/download)
+- **Yarn v4** - Managed via Corepack (comes with Node.js)
 
-## Building
-### Non-Package Build
-`yarn start`
-### Package Build
-`yarn app:dist`
+## Getting Started
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Highl1te/HighliteDesktop.git
+   cd HighliteDesktop
+   ```
+
+2. **Install dependencies**
+   ```bash
+   yarn install
+   ```
+## Development Commands
+### Development Mode
+```bash
+yarn dev          # Start development server with hot reload
+yarn start        # Preview built application without packaging
+```
+
+### Building
+```bash
+yarn build        # Build the application for production (automatically runs prebuild)
+yarn build:unpack # Build and create unpacked directory
+```
+
+### Platform-Specific Builds
+```bash
+yarn build:win    # Build Windows installer (.exe)
+yarn build:mac    # Build macOS application (.dmg)
+yarn build:linux  # Build Linux AppImage
+```
+
+### Code Quality
+```bash
+yarn format       # Format code with Prettier
+yarn format:check # Check code formatting
+yarn format:fix   # Fix formatting issues
+```
+
+## Project Structure
+- **`src/main/`** - Electron Main Process (Node Client Rendering)
+- **`src/preload/`** - Preload Scripts (Middle-man APIs between Node Client and Web Page)
+- **`src/renderer/`** - Renderer process (Web Page Rendering)
+- **`scripts/`** - Build and development scripts
+- **`build/`** - Application icons and build assets

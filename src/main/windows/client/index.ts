@@ -1,4 +1,19 @@
-import { app, BrowserWindow, shell } from 'electron';
+// Copyright (C) 2025  HighLite
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import path from 'path';
 import { format } from 'url';
 
@@ -14,17 +29,21 @@ export async function createClientWindow() {
         webPreferences: {
             preload: path.join(__dirname, '../preload/index.js'),
             sandbox: false, // Disable sandboxing for compatibility with some libraries
+            contextIsolation: true,
+            nodeIntegration: false,
+            nodeIntegrationInSubFrames: false,
+            nodeIntegrationInWorker: false,
+
             webSecurity: app.isPackaged, // Disable web security only in development for CORS
         },
         minHeight: 500,
         minWidth: 500,
-        icon: path.join(__dirname, 'static/icons/icon.png'),
+        icon: path.join(__dirname, 'icons/icon.png'),
         titleBarStyle: 'hidden',
         show: true,
     });
 
     mainWindow.setMenu(null);
-
     if (!app.isPackaged && process.env['ELECTRON_RENDERER_URL']) {
         const devUrl = `${process.env['ELECTRON_RENDERER_URL']}/client.html`;
         console.log('Loading dev URL:', devUrl);
@@ -69,6 +88,15 @@ export async function createClientWindow() {
         }
     });
 
+    mainWindow.webContents.on('console-message', (event) => {
+        ipcMain.emit('add-console-message', {
+            level: event.level,
+            text: event.message,
+            lineNumber: event.lineNumber,
+            source: event.sourceId
+        });
+    });
+
     // In development, modify requests to High Spell servers
     if (!app.isPackaged) {
         // Set user agent and origin for High Spell compatibility
@@ -92,6 +120,8 @@ export async function createClientWindow() {
         // Always start with zoom reset to 0.0
         mainWindow.webContents.setZoomLevel(0);
     });
+
+    
 
     return mainWindow;
 }

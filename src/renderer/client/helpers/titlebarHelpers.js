@@ -1,3 +1,18 @@
+// Copyright (C) 2025  HighLite
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 let ogError = console.error;
 console.error = function (...args) {
     ogError(...args);
@@ -14,7 +29,7 @@ console.error = function (...args) {
     // On click open dev tools
     if (warningIndicator) {
         warningIndicator.onclick = () => {
-            window.electron.ipcRenderer.send('show-dev-tools');
+            window.electron.ipcRenderer.send('show-console');
             // Clear the warning classes and hide the indicator
             const warningIcon = document.querySelector(
                 '#warningIndicator .warning-icon'
@@ -44,7 +59,7 @@ console.warn = function (...args) {
     // On click open dev tools
     if (warningIndicator) {
         warningIndicator.onclick = () => {
-            window.electron.ipcRenderer.send('show-dev-tools');
+            window.electron.ipcRenderer.send('show-console');
             // Clear the warning classes and hide the indicator
             const warningIcon = document.querySelector(
                 '#warningIndicator .warning-icon'
@@ -61,6 +76,8 @@ console.warn = function (...args) {
 const minimizeButton = document.querySelector('#minimizeBtn');
 const maximizeButton = document.querySelector('#maximizeBtn');
 const closeButton = document.querySelector('#closeBtn');
+const settingsButton = document.querySelector('#settingsBtn');
+const screenshotButton = document.querySelector('#screenshotBtn');
 
 // Add click event listeners to the buttons
 minimizeButton.addEventListener('click', () => {
@@ -72,6 +89,19 @@ maximizeButton.addEventListener('click', () => {
 closeButton.addEventListener('click', () => {
     window.electron.ipcRenderer.send('close-window');
 });
+settingsButton.addEventListener('click', () => {
+    window.electron.ipcRenderer.send('settings:open');
+});
+
+// Screenshot capture button
+if (screenshotButton) {
+    screenshotButton.addEventListener('click', async () => {
+        const res = await window.screenshot.capture();
+        if (!res.ok) {
+            console.error('Screenshot failed:', res.error);
+        }
+    });
+}
 
 const isDarwin = window.electron.process.platform === 'darwin';
 

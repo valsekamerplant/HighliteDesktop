@@ -1,11 +1,46 @@
+// Copyright (C) 2025  HighLite
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import { ipcMain, BrowserWindow, app, shell } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import path from 'path';
+import { settingsService } from '../../modules/settingsManagement';
 
-autoUpdater.autoDownload = false; // Disable auto download to control it manually
+async function configureAutoUpdater() {
+    autoUpdater.autoDownload = false; // Disable auto download to control it manually
+    await settingsService.load();
+
+    if (settingsService.getByName('Release Channel') == 'Beta') {
+        log.info('Using Beta channel for updates');
+        autoUpdater.allowDowngrade = false;
+        autoUpdater.allowPrerelease = true;
+    }
+
+    if (settingsService.getByName('Release Channel') === 'Stable') {
+        log.info('Using Stable channel for updates');
+        autoUpdater.allowDowngrade = true;
+        autoUpdater.allowPrerelease = false;
+    }
+
+    return Promise.resolve();
+}
+
 
 export async function createUpdateWindow() {
+    await configureAutoUpdater();
     const updateWindow = new BrowserWindow({
         title: 'Updating HighLite...',
         webPreferences: {
@@ -14,7 +49,7 @@ export async function createUpdateWindow() {
         },
         frame: true,
         resizable: false,
-        icon: path.join(__dirname, 'static/icons/icon.png'),
+        icon: path.join(__dirname, 'icons/icon.png'),
         titleBarStyle: 'hidden',
         width: 600,
         height: 400,
